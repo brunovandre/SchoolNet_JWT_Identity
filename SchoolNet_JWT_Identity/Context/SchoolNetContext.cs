@@ -1,9 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using SchoolNet_JWT_Identity.ApplicationUserSetup;
 using SchoolNet_JWT_Identity.Context.Mappings;
 using SchoolNet_JWT_Identity.Entities;
-using SchoolNet_JWT_Identity.Entities.Base;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace SchoolNet_JWT_Identity.Context
 {
-    public class SchoolNetContext : DbContext
+    public class SchoolNetContext : IdentityDbContext<User>
     {
         private readonly IApplicationUser _applicationUser;
 
@@ -31,6 +31,8 @@ namespace SchoolNet_JWT_Identity.Context
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
+
             modelBuilder.ApplyConfiguration(new StudentMapper());
             modelBuilder.ApplyConfiguration(new CourseMapper());
             modelBuilder.ApplyConfiguration(new TeacherMapper());
@@ -41,7 +43,21 @@ namespace SchoolNet_JWT_Identity.Context
         public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default(CancellationToken))
         {
             var entries = ChangeTracker.Entries();
-            foreach (EntityEntry entityEntry in entries)
+
+            var auditedEntities = new List<string>
+            {
+                "Course",
+                "Student",
+                "Teacher",
+                "StudentClass"                
+            };
+
+            var fullAuditedEntries = entries.Where(entry => (entry.Metadata.ClrType.BaseType != null &&
+                                     auditedEntities.Contains(entry.Metadata.ClrType.BaseType.Name)) ||
+                                     (entry.Metadata.ClrType.BaseType.BaseType != null &&
+                                     auditedEntities.Contains(entry.Metadata.ClrType.BaseType.BaseType.Name)));
+
+            foreach (EntityEntry entityEntry in fullAuditedEntries)
             {
                 var entity = entityEntry.Entity;
                 switch (entityEntry.State)

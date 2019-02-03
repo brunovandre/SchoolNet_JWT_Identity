@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -16,6 +17,7 @@ using Microsoft.OpenApi.Models;
 using SchoolNet_JWT_Identity.ApplicationUserSetup;
 using SchoolNet_JWT_Identity.Authentication;
 using SchoolNet_JWT_Identity.Context;
+using SchoolNet_JWT_Identity.Entities;
 
 namespace SchoolNet_JWT_Identity
 {
@@ -37,6 +39,10 @@ namespace SchoolNet_JWT_Identity
             {
                 options.UseSqlServer(Configuration.GetConnectionString("SchoolNetConnectionString"));
             });
+
+            services.AddIdentity<User, IdentityRole>()
+               .AddEntityFrameworkStores<SchoolNetContext>()
+               .AddDefaultTokenProviders();
 
             ConfigureAuthentication(services);
 

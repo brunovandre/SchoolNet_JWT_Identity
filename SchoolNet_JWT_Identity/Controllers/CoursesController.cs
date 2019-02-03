@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SchoolNet_JWT_Identity.Context;
@@ -11,7 +7,7 @@ using SchoolNet_JWT_Identity.Entities;
 
 namespace SchoolNet_JWT_Identity.Controllers
 {
-    [Authorize("Bearer")]
+    [Authorize(Policy = "Bearer", Roles = "Administrator")]
     [Route("api/[controller]")]
     [ApiController]
     public class CoursesController : ControllerBase

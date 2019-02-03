@@ -10,6 +10,5 @@ namespace SchoolNet_JWT_Identity.ApplicationUserSetup
         Guid UserId { get; set; }
         string Name { get; set; }
         string Email { get; set; }
-        string Token { get; set; }
     }
 }

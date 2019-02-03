@@ -11,7 +11,7 @@ using SchoolNet_JWT_Identity.Entities;
 
 namespace SchoolNet_JWT_Identity.Controllers
 {
-    [Authorize("Bearer")]
+    [Authorize(Roles = "Administrator")]
     [Route("api/[controller]")]
     [ApiController]
     public class TeachersController : ControllerBase
